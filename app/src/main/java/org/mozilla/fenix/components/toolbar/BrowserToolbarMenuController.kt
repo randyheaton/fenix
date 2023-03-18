@@ -41,6 +41,7 @@ import org.mozilla.fenix.collections.SaveCollectionStep
 import org.mozilla.fenix.components.FenixSnackbar
 import org.mozilla.fenix.components.TabCollectionStorage
 import org.mozilla.fenix.components.accounts.AccountState
+import org.mozilla.fenix.components.toolbar.DefaultBrowserToolbarController.Companion.TELEMETRY_BROWSER_IDENTIFIER
 import org.mozilla.fenix.ext.components
 import org.mozilla.fenix.ext.getRootView
 import org.mozilla.fenix.ext.nav
@@ -65,6 +66,7 @@ class DefaultBrowserToolbarMenuController(
     private val settings: Settings,
     private val readerModeController: ReaderModeController,
     private val sessionFeature: ViewBoundFeatureWrapper<SessionFeature>,
+    private val onRequestSummarizePage: () -> Unit,
     private val findInPageLauncher: () -> Unit,
     private val browserAnimator: BrowserAnimator,
     private val swipeRefresh: SwipeRefreshLayout,
@@ -299,6 +301,9 @@ class DefaultBrowserToolbarMenuController(
                     }
                 }
             }
+            is ToolbarMenu.Item.SummarizePage -> {
+                onRequestSummarizePage()
+            }
             is ToolbarMenu.Item.FindInPage -> {
                 findInPageLauncher()
             }
@@ -433,6 +438,9 @@ class DefaultBrowserToolbarMenuController(
                 } else {
                     Events.browserMenuAction.record(Events.BrowserMenuActionExtra("desktop_view_off"))
                 }
+            is ToolbarMenu.Item.SummarizePage -> {
+                //make no record
+            }
             is ToolbarMenu.Item.FindInPage ->
                 Events.browserMenuAction.record(Events.BrowserMenuActionExtra("find_in_page"))
             is ToolbarMenu.Item.SaveToCollection ->

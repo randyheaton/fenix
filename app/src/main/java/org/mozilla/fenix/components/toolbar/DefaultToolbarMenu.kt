@@ -222,6 +222,14 @@ open class DefaultToolbarMenu(
         id = WebExtensionPlaceholderMenuItem.MAIN_EXTENSIONS_MENU_ID,
     )
 
+    private val summarizePageItem = BrowserMenuImageText(
+        label = context.getString(R.string.browser_menu_summarize_page),
+        imageResource = R.drawable.ic_summarize,
+        iconTintColorResource = primaryTextColor(),
+    ) {
+        onItemTapped.invoke(ToolbarMenu.Item.SummarizePage)
+    }
+
     private val findInPageItem = BrowserMenuImageText(
         label = context.getString(R.string.browser_menu_find_in_page),
         imageResource = R.drawable.mozac_ic_search,
@@ -371,6 +379,7 @@ open class DefaultToolbarMenu(
                 extensionsItem,
                 syncMenuItem(),
                 BrowserMenuDivider(),
+                summarizePageItem,
                 findInPageItem,
                 desktopSiteItem,
                 customizeReaderView.apply { visible = ::shouldShowReaderViewCustomization },

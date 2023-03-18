@@ -12,6 +12,7 @@ interface ToolbarMenu {
     sealed class Item {
         object Settings : Item()
         data class RequestDesktop(val isChecked: Boolean) : Item()
+        object SummarizePage : Item()
         object FindInPage : Item()
         object Share : Item()
         data class Back(val viewHistory: Boolean) : Item()

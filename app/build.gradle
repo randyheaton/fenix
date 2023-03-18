@@ -3,7 +3,9 @@ import org.mozilla.fenix.gradle.tasks.ApkSizeTask
 plugins {
     id "com.jetbrains.python.envs" version "0.0.26"
     id "com.google.protobuf" version "0.8.19"
+    id 'org.jetbrains.kotlin.plugin.serialization' version '1.7.20'
 }
+
 
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
@@ -64,6 +66,8 @@ android {
                 "}"
         // This should be the base URL used to call the AMO API.
         buildConfigField "String", "AMO_SERVER_URL", "\"https://services.addons.mozilla.org\""
+        buildConfigField "String", "SUMMARY_TOKEN", "\"$summaryToken\""
+        buildConfigField "String", "SUMMARY_URL", "\"https://api.openai.com/v1/completions\""
         def deepLinkSchemeValue = "fenix-dev"
         buildConfigField "String", "DEEP_LINK_SCHEME", "\"$deepLinkSchemeValue\""
         manifestPlaceholders = [
@@ -602,6 +606,8 @@ dependencies {
     implementation FenixDependencies.androidx_datastore
     implementation FenixDependencies.protobuf_javalite
     implementation FenixDependencies.google_material
+
+    implementation 'org.jetbrains.kotlinx:kotlinx-serialization-json:1.4.1'
 
     implementation FenixDependencies.adjust
     implementation FenixDependencies.installreferrer // Required by Adjust
