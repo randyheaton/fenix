@@ -22,6 +22,7 @@ import androidx.annotation.CallSuper
 import androidx.annotation.VisibleForTesting
 import androidx.appcompat.app.AlertDialog
 import androidx.coordinatorlayout.widget.CoordinatorLayout
+import androidx.core.content.ContextCompat.startActivity
 import androidx.core.content.getSystemService
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
@@ -100,6 +101,7 @@ import mozilla.components.support.ktx.kotlinx.coroutines.flow.ifAnyChanged
 import mozilla.components.support.ktx.kotlinx.coroutines.flow.ifChanged
 import org.mozilla.fenix.BuildConfig
 import org.mozilla.fenix.FeatureFlags
+import org.mozilla.fenix.GleanMetrics.BookmarksManagement.open
 import org.mozilla.fenix.GleanMetrics.MediaState
 import org.mozilla.fenix.HomeActivity
 import org.mozilla.fenix.IntentReceiverActivity
@@ -111,6 +113,7 @@ import org.mozilla.fenix.browser.readermode.DefaultReaderModeController
 import org.mozilla.fenix.components.FenixSnackbar
 import org.mozilla.fenix.components.FindInPageIntegration
 import org.mozilla.fenix.components.StoreProvider
+import org.mozilla.fenix.components.summarize.SummarizePageDialog
 import org.mozilla.fenix.components.toolbar.BrowserFragmentState
 import org.mozilla.fenix.components.toolbar.BrowserFragmentStore
 import org.mozilla.fenix.components.toolbar.BrowserToolbarView
@@ -386,6 +389,9 @@ abstract class BaseBrowserFragment :
             settings = context.settings(),
             readerModeController = readerMenuController,
             sessionFeature = sessionFeature,
+            onRequestSummarizePage = {
+                getUsableUrlIfPossible(store)?.let { SummarizePageDialog(context, it).displayFinal() }
+            },
             findInPageLauncher = { findInPageIntegration.withFeature { it.launch() } },
             swipeRefresh = binding.swipeRefresh,
             browserAnimator = browserAnimator,
@@ -878,6 +884,19 @@ abstract class BaseBrowserFragment :
         )
 
         initializeEngineView(toolbarHeight)
+    }
+
+    private fun getUsableUrlIfPossible(store: BrowserStore): String? {
+        var usableUrl: String? = null
+        store.state.selectedTab?.let { selectedTab ->
+            val readerState = store.state.findTab(selectedTab.id)?.readerState
+            if (readerState?.active ?: false){
+                usableUrl = readerState?.activeUrl
+                return@let
+            }
+            usableUrl = selectedTab.content.url
+        }
+        return usableUrl
     }
 
     /**
